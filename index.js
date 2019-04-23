@@ -1,13 +1,25 @@
 const main = require('./main');
 const fs = require('fs');
-const readline = require('readline');
 const {google} = require('googleapis');
 
-fs.readFile('credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  main.authorize(JSON.parse(content), writeInJs);
+var docID;
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
 });
 
+readline.question(`Quelle est l'id de votre document google sheet? `, (id) => {
+    docID = id;
+    start();
+    readline.close()
+})
+
+function start () {
+    fs.readFile('credentials.json', (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    main.authorize(JSON.parse(content), writeInJs);
+    });
+}
 function factorial(n) {
     if (n <= 1) return 1;
     else return factorial(n-1) * n;
@@ -33,7 +45,7 @@ valueInputOption = 'USER_ENTERED'
 function writeInJs(auth) {
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.update({
-   spreadsheetId: '1UJd79fPTQZ2TWh3y-bJC5Z2rQQSvjDCY2_N21OSXBlc',
+   spreadsheetId: docID,
    range: 'A1:J10',
    valueInputOption:valueInputOption,
    resource: body
